@@ -37,6 +37,12 @@ prompts = [
         "category": "이미지 생성",
         "favorite": False
     }
+    {
+        "title": "파이썬 코드 리뷰",
+        "content": "작성한 파이썬 코드를 분석해서 가독성을 높일 수 있는 방법을 알려줘.",
+        "category": "개발",
+        "favorite": False
+    }    
 ]
 
 # 카테고리 목록 정의
