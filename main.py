@@ -1,3 +1,6 @@
+# Project: Prompt Manager
+# Version: 1.1.0
+# Last Updated: 2026.08.12
 # ==========================================
 # 나만의 프롬프트 관리 프로그램 (main.py)
 # 작성자: mustiolla
