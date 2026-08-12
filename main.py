@@ -169,6 +169,7 @@ def show_by_category():
 # ------------------------------------------
 def search_prompt():
     """키워드로 제목이나 내용을 검색합니다."""
+     # 사용자의 입력값에서 양쪽 공백을 제거(.strip)하고, 대소문자 구분 없이 검색하기 위해 소문자로 변환(.lower)합니다.
     keyword = input("\n검색어 입력: ").strip().lower()
     print(f"\n'{keyword}' 검색 결과:")
     found = False
