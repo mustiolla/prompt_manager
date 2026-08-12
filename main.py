@@ -236,4 +236,4 @@ def show_favorites():
 # 프로그램 실행
 if __name__ == "__main__":
     main()
-
+    print("\n프로그램을 종료합니다. 이용해 주셔서 감사합니다!")
