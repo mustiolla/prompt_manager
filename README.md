@@ -25,6 +25,8 @@ flowchart TD
 
     style Start fill:#fff4dd,stroke:#d4a017,stroke-width:2px
     style Menu fill:#f9f,stroke:#333,stroke-width:2px
+    ```
+
 
     
 ## ✅ 테스트 결과
