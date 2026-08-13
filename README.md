@@ -7,17 +7,22 @@ AI 프롬프트를 효율적으로 관리하고 저장하는 파이썬 도구입
 
 ```mermaid
 graph TD
-    A["시작"] --> B["데이터 로드"]
-    B --> C{"메인 메뉴"}
-    C --> D["1. 추가"]
-    C --> E["2. 목록"]
-    C --> F["3. 검색"]
-    C --> G["4. 즐겨찾기"]
-    C --> H["0. 종료"]
-    D --> C
-    E --> C
-    F --> C
-    G --> C
+  Start([프로그램 시작]) --> MainMenu{메뉴 선택}
+
+  MainMenu -- "1" --> ShowList["프롬프트 목록 출력"]
+  MainMenu -- "2" --> AddPrompt["새 프롬프트 추가<br/>(타임스탬프 자동 생성)"]
+  MainMenu -- "3" --> SearchPrompt["키워드 검색"]
+  MainMenu -- "4" --> ShowDetail["상세 보기<br/>(내용 및 별표 확인)"]
+  MainMenu -- "5" --> ToggleFav["즐겨찾기 설정/해제"]
+  MainMenu -- "6" --> ShowFavs["즐겨찾기 목록만 보기"]
+  MainMenu -- "0" --> Exit([프로그램 종료])
+
+  ShowList --> MainMenu
+  AddPrompt --> MainMenu
+  SearchPrompt --> MainMenu
+  ShowDetail --> MainMenu
+  ToggleFav --> MainMenu
+  ShowFavs --> MainMenu
 ```
 
 ## ✅ 테스트 결과
