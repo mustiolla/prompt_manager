@@ -39,7 +39,7 @@ prompts = [
         "content": "세련된 느낌의 IT 기기 홍보용 썸네일 이미지를 생성해줘.",
         "category": "이미지 생성",
         "favorite": False
-    }
+    },
     {
         "title": "파이썬 코드 리뷰",
         "content": "작성한 파이썬 코드를 분석해서 가독성을 높일 수 있는 방법을 알려줘.",
