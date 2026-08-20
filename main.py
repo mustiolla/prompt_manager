@@ -62,9 +62,9 @@ def main():
         choice = input("\n선택: ").strip()
         
         if choice == "1":
-            add_prompt()
-        elif choice == "2":
             show_list()
+        elif choice == "2":
+            add_prompt()
         elif choice == "3":
             show_by_category()
         elif choice == "4":
@@ -72,7 +72,7 @@ def main():
         elif choice == "5":
             show_detail()
         elif choice == "6":
-            manage_favorite()
+            toggle_favorite()
         elif choice == "7":
             show_favorites()
         elif choice == "0":
@@ -89,8 +89,8 @@ def display_menu():
     print("\n" + "="*30)
     print("   나만의 프롬프트 관리자")
     print("-" * 40)
-    print("[1] 프롬프트 추가")
-    print("[2] 프롬프트 목록")
+    print("[1] 프롬프트 목록")   
+    print("[2] 프롬프트 추가")   
     print("[3] 카테고리별 조회")
     print("[4] 프롬프트 검색")
     print("[5] 프롬프트 상세 보기")
@@ -280,36 +280,6 @@ def show_favorites():
 # ------------------------------------------
 # 10. 메인 메뉴 함수
 # ------------------------------------------
-def main():
-    """프로그램의 메인 루프를 관리합니다."""
-    while True:
-        print("\n=== 프롬프트 관리 프로그램 ===")
-        print("1. 프롬프트 목록 보기")
-        print("2. 새 프롬프트 추가")
-        print("3. 프롬프트 검색")
-        print("4. 상세 보기")
-        print("5. 즐겨찾기 설정/해제")
-        print("6. 즐겨찾기 목록 보기")
-        print("0. 프로그램 종료")
-        
-        choice = input("\n메뉴 선택: ")
-        
-        if choice == "1":
-            show_list()
-        elif choice == "2":
-            add_prompt()
-        elif choice == "3":
-            search_prompt()
-        elif choice == "4":
-            show_detail()
-        elif choice == "5":
-            toggle_favorite()
-        elif choice == "6":
-            show_favorites()
-        elif choice == "0":
-            break
-        else:
-            print("⚠️ 잘못된 선택입니다. 다시 입력해주세요.")
 
 # 프로그램 실행
 if __name__ == "__main__":

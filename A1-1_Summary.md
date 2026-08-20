@@ -12,7 +12,7 @@
 ## 2. 기술 스택 (Tech Stack)
 | 구분 | 기술 |
 | :--- | :--- |
-| **Language** | Python 3.10+ |
+| **Language** | Python 3.13+ |
 | **Tool(개발환경/도구)** | VSCode |
 | **VCS(버전관리)** | Git, GitHub |
 | **Library** | `datetime` (기본 라이브러리/시간 기록) |
@@ -68,17 +68,22 @@ graph LR
 
 ## 6. 실행 화면 (Demo)
 
-| 1. 프롬프트 목록 보기 | 4. 프롬프트 상세 보기 |
+| 1. 프롬프트 목록 보기 | 2. 프롬프트 추가 |
 | :---: | :---: |
-| ![목록보기](./Screenshots/1.프롬프트_목록보기.png) | ![상세보기](./Screenshots/4.프롬프트_상세보기.png) |
+| <img src="./Screenshots/1.프롬프트_목록보기.png" width="400"/><br><img src="./Screenshots/1-1.프롬프트_목록보기_추가.png" width="400"/> | <img src="./Screenshots/2.프롬프트_추가.png" width="400"/> |
 
-| 2. 프롬프트 추가 | 3. 프롬프트 검색 |
+| 3. 카테고리별 조회 | 4. 프롬프트 검색 |
 | :---: | :---: |
-| ![추가하기](./Screenshots/2.프롬프트_추가.png) | ![검색하기](./Screenshots/3.프롬프트_검색.png) |
+| <img src="./Screenshots/6.카테고리별_조회.png" width="400"/> | <img src="./Screenshots/3.프롬프트_검색.png" width="400"/> |
 
-| 5-1. 즐겨찾기 설정 | 5-2. 즐겨찾기 해제 |
+| 5. 프롬프트 상세 보기 | 6. 즐겨찾기 관리 |
 | :---: | :---: |
-| ![즐겨찾기설정](./Screenshots/5-1.즐겨찾기관리_설정.png) | ![즐겨찾기해제](./Screenshots/5-2.즐겨찾기관리_해제.png) |
+| <img src="./Screenshots/4.프롬프트_상세보기.png" width="400"/> | <img src="./Screenshots/5-1.즐겨찾기관리_설정.png" width="400"/><br><img src="./Screenshots/5-2.즐겨찾기관리_해제.png" width="400"/> |
+
+| 7. 프로그램 종료 |
+| :---: |
+| <img src="./Screenshots/0.프로그램_종료.png" width="400"/> |
+
 
 ## 7. 문제 해결(Troubleshooting)
 - **문제:** Git Push 과정에서 원격 저장소와의 충돌 발생.
