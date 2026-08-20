@@ -17,6 +17,10 @@
 | **VCS(버전관리)** | Git, GitHub |
 | **Library** | `datetime` (기본 라이브러리/시간 기록) |
 
+> **개발 환경 확인 (Python & Git 버전 정보)**
+>
+> <img src="./Screenshots/version_git사용자정보.png" width="500"/>
+
 ## 3. 핵심 기능 (Key Features)
 - **CRUD 기반 관리:** 프롬프트 추가, 전체 목록 조회, 상세 내용 확인.
   (Create: 추가, Read: 목록, 상세보기, 검색, Update: 즐겨찾기 설정, Delete: 삭제)
