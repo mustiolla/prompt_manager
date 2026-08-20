@@ -46,7 +46,7 @@ def search_prompt():  # 검색 로직
     "content": "내용",
     "category": "카테고리",
     "favorite": True,
-    "date": "2024-05-22 14:30:05"
+    "date": "2026-08-19 14:30:05"
 }
 ```
 
@@ -56,6 +56,7 @@ def search_prompt():  # 검색 로직
 - **기능 단위 커밋:** 총 20개 이상의 커밋을 통해 개발 과정을 세밀하게 기록.
 - **브랜치 전략:** `main` 브랜치 외에 `feature/list` 브랜치를 생성하여 기능을 독립적으로 개발 후 병합(Merge).
 - **문서화:** `README.md`에 Mermaid를 활용한 로직 흐름도 포함.
+
 
 ### Git Workflow 시각화
 ```mermaid
