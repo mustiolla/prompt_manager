@@ -72,21 +72,70 @@ graph LR
 
 ## 6. 실행 화면 (Demo)
 
-| 1. 프롬프트 목록 보기 | 2. 프롬프트 추가 |
-| :---: | :---: |
-| <img src="./Screenshots/1.프롬프트_목록보기.png" width="400"/><br><img src="./Screenshots/1-1.프롬프트_목록보기_추가.png" width="400"/> | <img src="./Screenshots/2.프롬프트_추가.png" width="400"/> |
+<table>
+  <tr><th>1. 프롬프트 목록 보기</th></tr>
+  <tr>
+    <td>
+      <img src="./Screenshots/1.프롬프트_목록보기.png" width="400"/>
+      <img src="./Screenshots/1-1.프롬프트_목록보기_추가.png" width="400"/>
+    </td>
+  </tr>
+</table>
 
-| 3. 카테고리별 조회 | 4. 프롬프트 검색 |
-| :---: | :---: |
-| <img src="./Screenshots/6.카테고리별_조회.png" width="400"/> | <img src="./Screenshots/3.프롬프트_검색.png" width="400"/> |
+<table>
+  <tr><th>2. 프롬프트 추가</th></tr>
+  <tr>
+    <td align="center">
+      <img src="./Screenshots/2.프롬프트_추가.png" width="400"/>
+    </td>
+  </tr>
+</table>
 
-| 5. 프롬프트 상세 보기 | 6. 즐겨찾기 관리 |
-| :---: | :---: |
-| <img src="./Screenshots/4.프롬프트_상세보기.png" width="400"/> | <img src="./Screenshots/5-1.즐겨찾기관리_설정.png" width="400"/><br><img src="./Screenshots/5-2.즐겨찾기관리_해제.png" width="400"/> |
+<table>
+  <tr><th>3. 카테고리별 조회</th></tr>
+  <tr>
+    <td align="center">
+      <img src="./Screenshots/6.카테고리별_조회.png" width="400"/>
+    </td>
+  </tr>
+</table>
 
-| 7. 프로그램 종료 |
-| :---: |
-| <img src="./Screenshots/0.프로그램_종료.png" width="400"/> |
+<table>
+  <tr><th>4. 프롬프트 검색</th></tr>
+  <tr>
+    <td align="center">
+      <img src="./Screenshots/3.프롬프트_검색.png" width="400"/>
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr><th>5. 프롬프트 상세 보기</th></tr>
+  <tr>
+    <td align="center">
+      <img src="./Screenshots/4.프롬프트_상세보기.png" width="400"/>
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr><th>6. 즐겨찾기 관리</th></tr>
+  <tr>
+    <td>
+      <img src="./Screenshots/5-1.즐겨찾기관리_설정.png" width="400"/>
+      <img src="./Screenshots/5-2.즐겨찾기관리_해제.png" width="400"/>
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr><th>7. 프로그램 종료</th></tr>
+  <tr>
+    <td align="center">
+      <img src="./Screenshots/0.프로그램_종료.png" width="400"/>
+    </td>
+  </tr>
+</table>
 
 
 ## 7. 문제 해결(Troubleshooting)
