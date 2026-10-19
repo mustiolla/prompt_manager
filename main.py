@@ -1,5 +1,5 @@
 # Project: Prompt Manager
-# Version: 1.4.0 (Bonus Features Included)
+# Version: 1.5.0 (Resilience & Advanced Search Update)
 # Last Updated: 2026.10.19
 # ==========================================
 # 나만의 프롬프트 관리 프로그램 (main.py)
@@ -8,6 +8,8 @@
 import os
 import sys
 import json
+import re
+import shutil
 from datetime import datetime
 
 # 콘솔 환경(특히 Windows)에서 한글 및 이모지 출력 시 인코딩 오류 방지
@@ -18,6 +20,8 @@ if hasattr(sys.stderr, 'reconfigure'):
 
 # 파일 경로 상수 정의
 DATA_FILE = "prompts.json"
+BACKUP_FILE = "prompts.json.bak"
+TEMP_FILE = "prompts.json.tmp"
 EXPORT_FILE = "prompts_export.md"
 
 # 기본 카테고리 목록 정의
@@ -81,14 +85,20 @@ prompts = [dict(p) for p in DEFAULT_PROMPTS]
 
 
 # ------------------------------------------
-# [보너스 1-a] JSON 파일 영속화 (Load / Save)
+# [추가 기능] JSON 파일 영속화 (Load / Save / Auto-Recovery)
 # ------------------------------------------
 def load_prompts():
-    """JSON 파일에서 프롬프트 및 카테고리 데이터를 불러옵니다."""
+    """JSON 파일에서 프롬프트 및 카테고리 데이터를 로드합니다. 파일 손상 시 백업본에서 복구합니다."""
     global prompts, CATEGORIES
-    if os.path.exists(DATA_FILE):
+    
+    target_file = DATA_FILE
+    if not os.path.exists(DATA_FILE) and os.path.exists(BACKUP_FILE):
+        print("⚠️ 메인 데이터 파일이 없어 백업 파일에서 복구를 시도합니다.")
+        target_file = BACKUP_FILE
+
+    if os.path.exists(target_file):
         try:
-            with open(DATA_FILE, "r", encoding="utf-8") as f:
+            with open(target_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if isinstance(data, dict):
                     loaded_prompts = data.get("prompts", DEFAULT_PROMPTS)
@@ -106,7 +116,23 @@ def load_prompts():
                         p["views"] = 0
             return
         except Exception as e:
-            print(f"⚠️ 데이터 파일 로드 중 오류 발생: {e}")
+            print(f"⚠️ '{target_file}' 로드 실패 (파일 손상 가능성): {e}")
+            # 메인 파일 손상 시 백업 파일로부터 자동 복구 시도
+            if target_file == DATA_FILE and os.path.exists(BACKUP_FILE):
+                try:
+                    print("🔄 백업 파일(prompts.json.bak)에서 복구를 시도합니다...")
+                    with open(BACKUP_FILE, "r", encoding="utf-8") as bf:
+                        data = json.load(bf)
+                        prompts = data.get("prompts", DEFAULT_PROMPTS) if isinstance(data, dict) else data
+                        for p in prompts:
+                            if "views" not in p:
+                                p["views"] = 0
+                        print("✅ 백업 파일로부터 성공적으로 복구되었습니다.")
+                        save_prompts()
+                        return
+                except Exception as be:
+                    print(f"⚠️ 백업 파일 복구도 실패했습니다: {be}")
+            
             prompts = [dict(p) for p in DEFAULT_PROMPTS]
     else:
         prompts = [dict(p) for p in DEFAULT_PROMPTS]
@@ -114,58 +140,90 @@ def load_prompts():
 
 
 def save_prompts():
-    """현재 프롬프트 및 카테고리 데이터를 JSON 파일로 저장합니다."""
+    """임시 파일 작성 후 교체하는 원자적(Atomic) 방식으로 데이터를 저장하고 백업본을 생성합니다."""
     try:
         data = {
             "categories": CATEGORIES,
             "prompts": prompts
         }
-        with open(DATA_FILE, "w", encoding="utf-8") as f:
+        
+        # 1. 임시 파일에 먼저 기록 (Atomic Write 준비)
+        with open(TEMP_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        # 2. 기존 정상 파일이 존재하면 백업본(.bak)으로 보존
+        if os.path.exists(DATA_FILE):
+            try:
+                shutil.copy2(DATA_FILE, BACKUP_FILE)
+            except Exception:
+                pass
+                
+        # 3. 원자적 파일 교체 (Windows 파일 락 대비 재시도 및 fallback 포함)
+        try:
+            os.replace(TEMP_FILE, DATA_FILE)
+        except OSError:
+            import time
+            time.sleep(0.05)
+            try:
+                os.replace(TEMP_FILE, DATA_FILE)
+            except OSError:
+                shutil.copy2(TEMP_FILE, DATA_FILE)
+                if os.path.exists(TEMP_FILE):
+                    try:
+                        os.remove(TEMP_FILE)
+                    except OSError:
+                        pass
     except Exception as e:
         print(f"⚠️ 데이터 파일 저장 중 오류 발생: {e}")
 
 
 # ------------------------------------------
-# 1. 메인 실행 함수 (Top)
+# 1. 메인 실행 함수 (Top-level Exception Wrap)
 # ------------------------------------------
 def main():
-    """프로그램의 시작점이며 전체 흐름을 제어합니다."""
+    """프로그램의 시작점이며 예외 및 강제 종료 시에도 안전한 저장을 보장합니다."""
     # 데이터 영속화: 시작 시 자동 로드
     load_prompts()
     
-    while True:
-        display_menu()
-        choice = input("\n선택: ").strip()
-        
-        if choice == "1":
-            show_list()
-        elif choice == "2":
-            add_prompt()
-        elif choice == "3":
-            show_by_category()
-        elif choice == "4":
-            search_prompt()
-        elif choice == "5":
-            show_detail()
-        elif choice == "6":
-            toggle_favorite()
-        elif choice == "7":
-            show_favorites()
-        elif choice == "8":
-            modify_prompt()
-        elif choice == "9":
-            delete_prompt()
-        elif choice == "10":
-            show_top_prompts()
-        elif choice == "11":
-            export_to_markdown()
-        elif choice == "0":
-            save_prompts()
-            print("프로그램을 종료합니다. 즐거운 하루 되세요!")
-            break
-        else:
-            print("⚠️ 잘못된 번호입니다. 다시 입력해주세요.")
+    try:
+        while True:
+            display_menu()
+            choice = input("\n선택: ").strip()
+            
+            if choice == "1":
+                show_list()
+            elif choice == "2":
+                add_prompt()
+            elif choice == "3":
+                show_by_category()
+            elif choice == "4":
+                search_prompt()
+            elif choice == "5":
+                show_detail()
+            elif choice == "6":
+                toggle_favorite()
+            elif choice == "7":
+                show_favorites()
+            elif choice == "8":
+                modify_prompt()
+            elif choice == "9":
+                delete_prompt()
+            elif choice == "10":
+                show_top_prompts()
+            elif choice == "11":
+                export_to_markdown()
+            elif choice == "0":
+                print("프로그램을 종료합니다. 즐거운 하루 되세요!")
+                break
+            else:
+                print("⚠️ 잘못된 번호입니다. 다시 입력해주세요.")
+    except KeyboardInterrupt:
+        print("\n\n⚠️ 사용자에 의해 프로그램이 강제 중단되었습니다. (Ctrl+C)")
+    except Exception as e:
+        print(f"\n⚠️ 예기치 못한 시스템 오류 발생: {e}")
+    finally:
+        # 비정상 종료 시에도 항상 데이터 저장 보장
+        save_prompts()
 
 
 # ------------------------------------------
@@ -179,7 +237,7 @@ def display_menu():
     print("[1]  프롬프트 목록")   
     print("[2]  프롬프트 추가")   
     print("[3]  카테고리별 조회")
-    print("[4]  프롬프트 검색")
+    print("[4]  프롬프트 검색 (키워드/정규식)")
     print("[5]  프롬프트 상세 보기 (조회수 +1)")
     print("[6]  즐겨찾기 관리")
     print("[7]  즐겨찾기 목록")
@@ -381,23 +439,39 @@ def show_by_category():
 
 
 # ------------------------------------------
-# 9. 검색 함수 (Read)
+# 9. 검색 함수 (키워드 부분 일치 + 정규표현식 지원)
 # ------------------------------------------
 def search_prompt():
-    """키워드를 입력받아 제목이나 내용에서 검색합니다."""
-    keyword = input("\n검색할 키워드를 입력하세요: ").strip()
+    """키워드 또는 정규식('r:패턴')으로 제목이나 내용에서 검색합니다."""
+    keyword = input("\n검색할 키워드(또는 'r:정규표현식')를 입력하세요: ").strip()
     
     if not keyword:
         print("⚠️ 검색어를 입력해야 합니다.")
         return
 
-    print(f"\n'{keyword}' 검색 결과:")
+    # 정규표현식 옵션 처리 ('r:' 접두사)
+    is_regex = keyword.startswith("r:")
+    regex_pattern = None
+    if is_regex:
+        raw_pattern = keyword[2:].strip()
+        try:
+            regex_pattern = re.compile(raw_pattern, re.IGNORECASE)
+            print(f"\n[정규표현식 검색: /{raw_pattern}/i]")
+        except re.error as e:
+            print(f"⚠️ 유효하지 않은 정규표현식입니다: {e}")
+            return
+    else:
+        print(f"\n'{keyword}' 검색 결과:")
+
     print("-" * 50)
-    
     found = False
     for p in prompts:
-        # 제목이나 내용에 키워드가 포함되어 있는지 확인
-        if keyword.lower() in p["title"].lower() or keyword.lower() in p["content"].lower():
+        if is_regex:
+            match = bool(regex_pattern.search(p["title"]) or regex_pattern.search(p["content"]))
+        else:
+            match = (keyword.lower() in p["title"].lower() or keyword.lower() in p["content"].lower())
+
+        if match:
             views = f"({p.get('views', 0)}회)"
             fav = "★" if p.get("favorite") else ""
             print(f"[{p['category']}] {p['title']} {views} {fav}")
@@ -408,7 +482,7 @@ def search_prompt():
 
 
 # ------------------------------------------
-# 10. 상세 보기 함수 (보너스 2-b: 조회수 기록)
+# 10. 상세 보기 함수 (추가 기능: 조회수 기록)
 # ------------------------------------------
 def show_detail():
     """번호를 입력받아 해당 프롬프트의 상세 내용을 보여주고 조회수를 1 증가시킵니다."""
@@ -488,7 +562,7 @@ def show_favorites():
 
 
 # ------------------------------------------
-# [보너스 2-c] 인기 프롬프트 (조회수 기준 Top 목록)
+# [추가 기능] 인기 프롬프트 (조회수 기준 Top 목록)
 # ------------------------------------------
 def show_top_prompts():
     """조회수(사용 횟수) 기준 내림차순 정렬된 Top 프롬프트 목록을 출력합니다."""
@@ -510,7 +584,7 @@ def show_top_prompts():
 
 
 # ------------------------------------------
-# [보너스 1-b] 카테고리별 Markdown 파일 내보내기
+# [추가 기능] 카테고리별 Markdown 파일 내보내기
 # ------------------------------------------
 def export_to_markdown(filepath=EXPORT_FILE):
     """전체 프롬프트를 카테고리별로 분류하여 Markdown 파일로 내보냅니다."""
