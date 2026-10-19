@@ -1,11 +1,18 @@
 # Project: Prompt Manager
-# Version: 1.2.0
-# Last Updated: 2026.08.22
+# Version: 1.3.0
+# Last Updated: 2026.10.19
 # ==========================================
 # 나만의 프롬프트 관리 프로그램 (main.py)
 # ==========================================
 
+import sys
 from datetime import datetime
+
+# 콘솔 환경(특히 Windows)에서 한글 및 이모지 출력 시 인코딩 오류 방지
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
 
 # [전역 변수] 프로그램 전체에서 사용할 데이터 저장소
 prompts = [
@@ -13,42 +20,48 @@ prompts = [
         "title": "LLM 기반 회의록 자동화",
         "content": "회의 녹취록을 입력하면 안건, 결정사항, 실행 과제로 요약해줘.",
         "category": "자동화",
+        "date": "2026-08-12 09:15:00",
         "favorite": True
     },
     {
         "title": "날으는 자동차 영상 제작",
         "content": "미래 도시를 배경으로 날으는 자동차가 질주하는 16초 영상을 위한 프롬프트.",
         "category": "영상 생성",
+        "date": "2026-08-12 09:20:00",
         "favorite": False
     },
     {
         "title": "최신 논문 요약 메일 발송",
         "content": "Make를 활용해 매일 아침 최신 AI 논문을 요약해서 메일로 보내줘.",
         "category": "자동화",
+        "date": "2026-08-12 09:30:00",
         "favorite": True
     },
     {
         "title": "블로그 포스팅 생성기",
         "content": "특정 주제를 주면 서론-본론-결론 구조의 블로그 글을 써줘.",
         "category": "텍스트 생성",
+        "date": "2026-08-12 09:45:00",
         "favorite": False
     },
     {
         "title": "제품 홍보용 썸네일 이미지",
         "content": "세련된 느낌의 IT 기기 홍보용 썸네일 이미지를 생성해줘.",
         "category": "이미지 생성",
+        "date": "2026-08-12 10:00:00",
         "favorite": False
     },
     {
         "title": "파이썬 코드 리뷰",
         "content": "작성한 파이썬 코드를 분석해서 가독성을 높일 수 있는 방법을 알려줘.",
         "category": "개발",
+        "date": "2026-08-12 10:15:00",
         "favorite": False
     }    
 ]
 
 # 카테고리 목록 정의
-CATEGORIES = ["텍스트 생성", "이미지 생성", "영상 생성", "페르소나", "자동화", "기타"]
+CATEGORIES = ["텍스트 생성", "이미지 생성", "영상 생성", "페르소나", "자동화", "개발", "기타"]
 
 # ------------------------------------------
 # 1. 메인 실행 함수 (Top)
@@ -75,6 +88,8 @@ def main():
             show_favorites()
         elif choice == "8":
             modify_prompt()
+        elif choice == "9":
+            delete_prompt()
         elif choice == "0":
             print("프로그램을 종료합니다. 즐거운 하루 되세요!")
             break
@@ -97,6 +112,7 @@ def display_menu():
     print("[6] 즐겨찾기 관리")
     print("[7] 즐겨찾기 목록")
     print("[8] 프롬프트 수정")
+    print("[9] 프롬프트 삭제")
     print("[0] 종료")
     print("-" * 40)
 
@@ -146,7 +162,14 @@ def add_prompt():
     """새로운 프롬프트를 입력받아 저장합니다."""
     print("\n--- 새 프롬프트 등록 ---")
     title = input("제목을 입력하세요: ").strip()
+    if not title:
+        print("⚠️ 제목은 비어 있을 수 없습니다.")
+        return
+
     content = input("내용을 입력하세요: ").strip()
+    if not content:
+        print("⚠️ 내용은 비어 있을 수 없습니다.")
+        return
     
     category = select_category()
 
@@ -203,7 +226,28 @@ def modify_prompt():
         print("⚠️ 숫자만 입력해주세요.")
 
 # ------------------------------------------
-# 6. 목록 보기 함수
+# 6. 프롬프트 삭제 함수
+# ------------------------------------------
+def delete_prompt():
+    """기존 프롬프트를 번호로 선택하여 삭제합니다."""
+    if not prompts:
+        print("\n⚠️ 등록된 프롬프트가 없습니다.")
+        return
+
+    try:
+        idx = int(input("\n삭제할 프롬프트 번호: ")) - 1
+        
+        if 0 <= idx < len(prompts):
+            deleted = prompts.pop(idx)
+            print(f"\n✅ '{deleted['title']}' 프롬프트가 삭제되었습니다.")
+        else:
+            print("⚠️ 해당 번호의 프롬프트가 없습니다.")
+            
+    except ValueError:
+        print("⚠️ 숫자만 입력해주세요.")
+
+# ------------------------------------------
+# 7. 목록 보기 함수
 # ------------------------------------------
 def show_list():
     """저장된 모든 프롬프트의 목록을 출력합니다."""
@@ -219,7 +263,7 @@ def show_list():
         print(f"{i+1:<3} | {p['category']:<10} | {p['title']:<20} | {date} {fav}")
 
 # ------------------------------------------
-# 7. 카테고리별 조회 함수
+# 8. 카테고리별 조회 함수
 # ------------------------------------------
 def show_by_category():
     """특정 카테고리의 프롬프트만 선택해서 보여줍니다."""
@@ -229,6 +273,9 @@ def show_by_category():
         
     try:
         choice = int(input("\n조회할 카테고리 번호: ")) - 1
+        if not (0 <= choice < len(CATEGORIES)):
+            print("⚠️ 올바른 번호를 선택해주세요.")
+            return
         target_cat = CATEGORIES[choice]
         
         print(f"\n[{target_cat}] 카테고리 검색 결과:")
@@ -247,7 +294,7 @@ def show_by_category():
         print("⚠️ 올바른 번호를 선택해주세요.")
 
 # ------------------------------------------
-# 8. 검색 함수
+# 9. 검색 함수
 # ------------------------------------------
 def search_prompt():
     """키워드를 입력받아 제목이나 내용에서 검색합니다."""
@@ -271,7 +318,7 @@ def search_prompt():
         print("검색 결과가 없습니다.")
 
 # ------------------------------------------
-# 9. 상세 보기 함수
+# 10. 상세 보기 함수
 # ------------------------------------------
 def show_detail():
     """번호를 입력받아 해당 프롬프트의 상세 내용을 보여줍니다."""
@@ -299,7 +346,7 @@ def show_detail():
         print("⚠️ 숫자만 입력해주세요.")
 
 # ------------------------------------------
-# 10. 즐겨찾기 관리 함수
+# 11. 즐겨찾기 관리 함수
 # ------------------------------------------
 def toggle_favorite():
     """프롬프트의 즐겨찾기 상태를 반전(On/Off)시킵니다."""
@@ -325,7 +372,7 @@ def toggle_favorite():
         print("⚠️ 숫자만 입력해주세요.")
 
 # ------------------------------------------
-# 11. 즐겨찾기 목록 함수
+# 12. 즐겨찾기 목록 함수
 # ------------------------------------------
 def show_favorites():
     """즐겨찾기에 등록된 프롬프트만 보여줍니다."""
@@ -347,5 +394,4 @@ def show_favorites():
 # 프로그램 실행
 if __name__ == "__main__":
     main()
-
-print("\n프로그램을 종료합니다. 이용해 주셔서 감사합니다!")
+    print("\n프로그램을 종료합니다. 이용해 주셔서 감사합니다!")
